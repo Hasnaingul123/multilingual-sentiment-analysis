@@ -1,0 +1,17 @@
+# Development dependencies
+-r requirements.txt
+
+# Additional Development Tools
+ipython==8.20.0
+jupyter==1.0.0
+jupyterlab==4.0.11
+notebook==7.0.7
+
+# Code Quality
+autopep8==2.0.4
+isort==5.13.2
+pylint==3.0.3
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0

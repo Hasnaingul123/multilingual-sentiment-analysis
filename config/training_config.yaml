@@ -1,0 +1,92 @@
+# Training Configuration
+training:
+  # Basic settings
+  seed: 42
+  output_dir: "checkpoints"
+  log_dir: "logs"
+  
+  # Training parameters
+  num_epochs: 10
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  effective_batch_size: 32  # batch_size * gradient_accumulation_steps
+  
+  # Learning rate and optimization
+  optimizer:
+    type: "adamw"  # Options: "adam", "adamw", "sgd"
+    learning_rate: 2.0e-5
+    weight_decay: 0.01
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+  
+  # Learning rate scheduling
+  scheduler:
+    type: "linear_warmup_decay"  # Options: "constant", "linear_warmup_decay", "cosine", "polynomial"
+    num_warmup_steps: 500
+    num_training_steps: null  # Auto-calculated if null
+  
+  # Gradient clipping
+  max_grad_norm: 1.0
+  
+  # Mixed precision training
+  fp16: false
+  bf16: false
+  
+  # Checkpointing
+  save_strategy: "epoch"  # Options: "epoch", "steps"
+  save_steps: 500
+  save_total_limit: 3  # Keep only last N checkpoints
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_combined_f1"
+  
+  # Evaluation
+  evaluation_strategy: "epoch"  # Options: "no", "steps", "epoch"
+  eval_steps: 500
+  per_device_eval_batch_size: 32
+  
+  # Logging
+  logging_strategy: "steps"
+  logging_steps: 50
+  logging_first_step: true
+  report_to: ["tensorboard"]  # Options: "tensorboard", "wandb", "none"
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 3
+    min_delta: 0.001
+  
+  # Data loading
+  dataloader_num_workers: 4
+  dataloader_pin_memory: true
+  dataloader_drop_last: false
+  
+  # Reproducibility
+  deterministic: true
+  cudnn_benchmark: false
+
+# Validation and Test
+validation:
+  split_ratio: 0.15
+  stratify: true  # Stratify by sentiment and sarcasm labels
+  
+test:
+  split_ratio: 0.15
+  
+# Cross-validation (optional)
+cross_validation:
+  enabled: false
+  num_folds: 5
+  stratified: true
+
+# Hyperparameter tuning (optional)
+hyperparameter_search:
+  enabled: false
+  method: "grid"  # Options: "grid", "random", "bayesian"
+  num_trials: 20
+  
+  search_space:
+    learning_rate: [1.0e-5, 2.0e-5, 3.0e-5, 5.0e-5]
+    batch_size: [8, 16, 32]
+    sentiment_weight: [0.5, 0.6, 0.7]
+    sarcasm_weight: [0.3, 0.4, 0.5]

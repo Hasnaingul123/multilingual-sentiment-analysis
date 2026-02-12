@@ -1,0 +1,107 @@
+# Model Architecture Configuration
+model:
+  # Base transformer model
+  base_model: "xlm-roberta-base"  # Options: "bert-base-multilingual-cased", "xlm-roberta-base", "xlm-roberta-large"
+  
+  # Model dimensions
+  hidden_size: 768
+  num_attention_heads: 12
+  num_hidden_layers: 12
+  intermediate_size: 3072
+  
+  # Dropout rates
+  hidden_dropout_prob: 0.1
+  attention_probs_dropout_prob: 0.1
+  classifier_dropout: 0.1
+  
+  # Task-specific heads
+  sentiment:
+    num_classes: 3  # negative, neutral, positive
+    hidden_dim: 256
+    dropout: 0.2
+    activation: "tanh"
+  
+  sarcasm:
+    num_classes: 2  # non-sarcastic, sarcastic
+    hidden_dim: 128
+    dropout: 0.2
+    activation: "relu"
+  
+  # LID (Language Identification) Integration
+  lid_integration:
+    enabled: true
+    method: "feature_concat"  # Options: "feature_concat", "attention_mask", "adapter_layers"
+    num_languages: 10  # Support for top 10 languages
+    lid_embedding_dim: 32
+  
+  # Parameter-Efficient Fine-Tuning (PEFT)
+  peft:
+    enabled: false
+    method: "lora"  # Options: "lora", "adapter", "prefix_tuning"
+    lora_r: 8
+    lora_alpha: 16
+    lora_dropout: 0.1
+    target_modules: ["query", "value"]
+  
+  # Freezing strategy
+  freeze_embeddings: false
+  freeze_encoder_layers: 0  # Number of bottom layers to freeze (0 = none)
+
+# Multi-task Learning
+multitask:
+  # Loss weights
+  sentiment_weight: 0.6  # λ₁
+  sarcasm_weight: 0.4    # λ₂
+  
+  # Loss balancing strategy
+  loss_balancing:
+    method: "static"  # Options: "static", "uncertainty_weighting", "gradient_based"
+    update_frequency: 100  # Update weights every N steps (for dynamic methods)
+  
+  # Loss functions
+  sentiment_loss:
+    type: "focal"  # Options: "cross_entropy", "focal", "label_smoothing"
+    focal_alpha: [0.25, 0.25, 0.5]  # Class weights for [neg, neu, pos]
+    focal_gamma: 2.0
+    label_smoothing: 0.0
+  
+  sarcasm_loss:
+    type: "focal"  # Options: "binary_cross_entropy", "focal"
+    focal_alpha: 0.75  # Weight for positive class (sarcastic)
+    focal_gamma: 2.0
+    pos_weight: 2.0  # Weight for positive class to handle imbalance
+
+# Uncertainty Estimation
+uncertainty:
+  method: "temperature_scaling"  # Options: "temperature_scaling", "mc_dropout", "ensemble"
+  
+  temperature_scaling:
+    initial_temperature: 1.0
+    optimize_on_validation: true
+  
+  mc_dropout:
+    num_samples: 10
+    dropout_rate: 0.1
+  
+  ensemble:
+    num_models: 5
+
+# Model Optimization
+optimization:
+  # Quantization
+  quantization:
+    enabled: false
+    method: "dynamic"  # Options: "dynamic", "static", "qat"
+    dtype: "int8"
+  
+  # ONNX Export
+  onnx_export:
+    enabled: false
+    opset_version: 14
+
+# Inference
+inference:
+  max_length: 128
+  batch_size: 32
+  device: "cpu"  # Options: "cpu", "cuda", "mps"
+  num_workers: 4

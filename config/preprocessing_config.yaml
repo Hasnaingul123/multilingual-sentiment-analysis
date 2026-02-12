@@ -1,0 +1,134 @@
+# Preprocessing Configuration
+preprocessing:
+  # Text cleaning
+  cleaning:
+    lowercase: false  # Keep case for acronyms and proper nouns
+    remove_urls: false  # Replace with special token instead
+    remove_mentions: false  # Replace with special token instead
+    remove_hashtags: false  # Keep hashtags, they carry sentiment
+    remove_numbers: false
+    remove_punctuation: false  # Critical for sentiment and sarcasm
+    strip_whitespace: true
+    remove_extra_spaces: true
+  
+  # Special tokens
+  special_tokens:
+    url_token: "[URL]"
+    mention_token: "[MENTION]"
+    hashtag_prefix: "#"
+    
+  # Emoji handling
+  emoji:
+    strategy: "lexicon"  # Options: "remove", "lexicon", "keep", "demojize"
+    sentiment_lexicon_path: "config/lexicons/emoji_sentiment.json"
+    
+  # Elongation normalization (e.g., "sooooo" -> "so")
+  elongation:
+    enabled: true
+    max_repetitions: 2
+    
+  # Slang normalization
+  slang:
+    enabled: true
+    lexicon_dir: "config/lexicons/slang"
+    languages: ["en", "hi", "es", "fr", "ar"]  # Language-specific slang dictionaries
+    contextual: true  # Use context to disambiguate slang
+    
+  # Abbreviation expansion
+  abbreviations:
+    enabled: true
+    lexicon_path: "config/lexicons/abbreviations.json"
+    case_sensitive: false
+  
+  # Language Identification (Token-level)
+  language_identification:
+    enabled: true
+    method: "fasttext"  # Options: "fasttext", "langid", "polyglot"
+    
+    fasttext:
+      model_path: "models/lid.176.bin"  # FastText language ID model
+      threshold: 0.5  # Confidence threshold
+      
+    # Token-level settings
+    token_level: true
+    min_token_length: 3  # Minimum characters for token-level LID
+    fallback_to_sentence_level: true
+    
+    # Supported languages (ISO 639-1 codes)
+    supported_languages:
+      - "en"  # English
+      - "hi"  # Hindi
+      - "es"  # Spanish
+      - "fr"  # French
+      - "ar"  # Arabic
+      - "pt"  # Portuguese
+      - "de"  # German
+      - "zh"  # Chinese
+      - "ja"  # Japanese
+      - "ko"  # Korean
+      
+  # Code-switching handling
+  code_switching:
+    detect: true
+    min_switches: 1  # Minimum language switches to flag as code-switched
+    preserve_boundaries: true  # Keep language boundary information
+    
+  # Tokenization
+  tokenization:
+    tokenizer: "xlm-roberta-base"  # Must match model
+    max_length: 128
+    truncation: true
+    padding: "max_length"
+    add_special_tokens: true
+    return_attention_mask: true
+    return_token_type_ids: false  # XLM-RoBERTa doesn't use token type IDs
+    
+  # Data augmentation (optional)
+  augmentation:
+    enabled: false
+    methods:
+      - "back_translation"
+      - "synonym_replacement"
+      - "random_insertion"
+      - "random_swap"
+      - "random_deletion"
+    augmentation_factor: 0.2  # Percentage of data to augment
+    
+  # Caching
+  cache:
+    enabled: true
+    cache_dir: "data/cache"
+    cache_processed_data: true
+    cache_tokenized_data: true
+
+# Data validation
+validation:
+  # Quality checks
+  min_text_length: 5  # Minimum characters
+  max_text_length: 512
+  remove_duplicates: true
+  remove_null_labels: true
+  
+  # Language distribution checks
+  check_language_balance: true
+  min_samples_per_language: 50
+  
+  # Label distribution
+  check_class_balance: true
+  min_samples_per_class: 100
+
+# Sampling and balancing
+sampling:
+  # Class balancing
+  balance_sentiment_classes: false
+  balance_sarcasm_classes: true  # Oversample sarcastic examples
+  balancing_method: "oversample"  # Options: "oversample", "undersample", "smote"
+  
+  # Stratification
+  stratify_by: ["sentiment", "language"]
+
+# Output format
+output:
+  format: "huggingface_dataset"  # Options: "huggingface_dataset", "pandas", "json"
+  save_processed: true
+  output_dir: "data/processed"
