@@ -1,12 +1,40 @@
 """
-Preprocessing Module
+Preprocessing module for text normalization and language identification.
 
-Text preprocessing and data preparation utilities:
-- Text cleaning and normalization
-- Slang and emoji handling
-- Language identification
-- Code-switching detection
-- Tokenization and encoding
+Exports:
+    TokenLevelLID   — per-token language identification
+    TextNormalizer  — multi-stage text normalization pipeline
+    get_lid         — singleton LID accessor
 """
 
-__all__ = []
+from .language_identifier import (
+    TokenLevelLID,
+    SentenceLID,
+    TokenLanguage,
+    ScriptDetector,
+    get_lid,
+)
+from .text_normalizer import (
+    TextNormalizer,
+    URLMentionNormalizer,
+    EmojiNormalizer,
+    ElongationNormalizer,
+    AbbreviationExpander,
+    SlangExpander,
+    CaseNormalizer,
+)
+
+__all__ = [
+    "TokenLevelLID",
+    "SentenceLID",
+    "TokenLanguage",
+    "ScriptDetector",
+    "get_lid",
+    "TextNormalizer",
+    "URLMentionNormalizer",
+    "EmojiNormalizer",
+    "ElongationNormalizer",
+    "AbbreviationExpander",
+    "SlangExpander",
+    "CaseNormalizer",
+]
