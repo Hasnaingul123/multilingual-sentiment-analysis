@@ -1,33 +1,37 @@
-"""
-Models Module
+"""Models module — neural architectures, loss functions, and task heads."""
 
-Contains model architectures for multilingual sentiment analysis:
-- Base transformer models (XLM-RoBERTa, mBERT)
-- Multi-task learning heads (sentiment, sarcasm)
-- Language identification integration
-- Custom attention mechanisms
-"""
-
-# Conditional imports for PyTorch-dependent modules
 try:
-    from models.task_heads import (
-        LIDFusionLayer,
-        SentimentHead,
-        SarcasmHead,
+    from .focal_loss import FocalLoss, BinaryFocalLoss, CompositeLoss
+    from .task_heads import SentimentHead, SarcasmHead, LIDFusionLayer
+    from .multitask_transformer import MultiTaskSentimentModel
+    from .sarcasm_features import (
+        SarcasmSignalExtractor,
+        EnhancedSarcasmHead,
+        SarcasmAuxiliaryFeatures,
+        SentimentIncongruenceModule,
     )
-    from models.multitask_transformer import MultiTaskSentimentModel
-    
-    _TORCH_AVAILABLE = True
+    from .load_balancer import (
+        GradNormBalancer,
+        DynamicWeightAverage,
+        UncertaintyWeighting,
+        build_loss_balancer,
+    )
+    from .contrastive_loss import (
+        SupervisedContrastiveLoss,
+        TripletContrastiveLoss,
+        ContrastiveLossWrapper,
+    )
+    __all__ = [
+        "FocalLoss", "BinaryFocalLoss", "CompositeLoss",
+        "SentimentHead", "SarcasmHead", "LIDFusionLayer",
+        "MultiTaskSentimentModel",
+        "SarcasmSignalExtractor", "EnhancedSarcasmHead",
+        "SarcasmAuxiliaryFeatures", "SentimentIncongruenceModule",
+        "GradNormBalancer", "DynamicWeightAverage", "UncertaintyWeighting",
+        "build_loss_balancer",
+        "SupervisedContrastiveLoss", "TripletContrastiveLoss",
+        "ContrastiveLossWrapper",
+    ]
 except ImportError:
-    _TORCH_AVAILABLE = False
-    LIDFusionLayer = None
-    SentimentHead = None
-    SarcasmHead = None
-    MultiTaskSentimentModel = None
+    __all__ = []
 
-__all__ = [
-    "LIDFusionLayer",
-    "SentimentHead",
-    "SarcasmHead",
-    "MultiTaskSentimentModel",
-]
