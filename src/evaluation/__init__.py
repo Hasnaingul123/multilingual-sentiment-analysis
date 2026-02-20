@@ -1,12 +1,38 @@
-"""
-Evaluation Module
+"""Evaluation module — metrics, calibration, and robustness testing."""
 
-Model evaluation and metrics:
-- Classification metrics (accuracy, precision, recall, F1)
-- Multi-task evaluation
-- Confusion matrices
-- Per-language performance analysis
-- Uncertainty calibration metrics
-"""
+from .metrics import (
+    ClassificationMetrics,
+    CalibrationMetrics,
+    PerLanguageMetrics,
+    ConfusionMatrixMetrics,
+    MultiTaskEvaluator,
+)
+from .robustness import (
+    TextPerturbations,
+    RobustnessTestSuite,
+)
 
-__all__ = []
+# Torch-dependent exports
+try:
+    from .calibration import (
+        TemperatureScaling,
+        BinaryTemperatureScaling,
+        MultiTaskCalibrator,
+    )
+    _CALIB_EXPORTS = [
+        "TemperatureScaling",
+        "BinaryTemperatureScaling",
+        "MultiTaskCalibrator",
+    ]
+except Exception:
+    _CALIB_EXPORTS = []
+
+__all__ = [
+    "ClassificationMetrics",
+    "CalibrationMetrics",
+    "PerLanguageMetrics",
+    "ConfusionMatrixMetrics",
+    "MultiTaskEvaluator",
+    "TextPerturbations",
+    "RobustnessTestSuite",
+] + _CALIB_EXPORTS
