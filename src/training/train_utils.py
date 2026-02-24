@@ -150,6 +150,49 @@ def compute_epoch_metrics(
     }
 
 
+def find_optimal_threshold(
+    sarcasm_probs: List[float],
+    sarcasm_labels: List[int],
+    thresholds: List[float] = None,
+) -> float:
+    """
+    Sweep decision thresholds for sarcasm binary classification
+    and return the threshold that maximizes binary F1.
+
+    Motivation: When the model collapses to always predicting
+    "sarcastic" (recall=1.0, precision~0.5), adjusting the threshold
+    above 0.5 can recover precision at a small recall cost.
+
+    Args:
+        sarcasm_probs:  List of sigmoid probabilities from the sarcasm head
+        sarcasm_labels: True binary labels (0/1)
+        thresholds:     List of thresholds to sweep. Default: 0.30–0.70 step 0.05
+
+    Returns:
+        Best threshold (float between 0 and 1)
+    """
+    if f1_score is None:
+        raise ImportError("sklearn required. Run: pip install scikit-learn")
+
+    if thresholds is None:
+        thresholds = [round(t, 2) for t in np.arange(0.30, 0.75, 0.05).tolist()]
+
+    probs = np.array(sarcasm_probs)
+    labels = np.array(sarcasm_labels)
+
+    best_thresh = 0.5
+    best_f1 = -1.0
+
+    for thresh in thresholds:
+        preds = (probs >= thresh).astype(int)
+        score = f1_score(labels, preds, average="binary", zero_division=0)
+        if score > best_f1:
+            best_f1 = score
+            best_thresh = thresh
+
+    return best_thresh
+
+
 def print_classification_report(
     sentiment_preds: List[int],
     sentiment_labels: List[int],

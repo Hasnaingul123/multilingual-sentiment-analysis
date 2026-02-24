@@ -1,12 +1,12 @@
 # Model Architecture Configuration
 model:
   # Base transformer model
-  base_model: "xlm-roberta-base"  # Options: "bert-base-multilingual-cased", "xlm-roberta-base", "xlm-roberta-large"
+  base_model: "distilbert-base-multilingual-cased"  # Switched: smaller (540MB) multilingual model
   
   # Model dimensions
   hidden_size: 768
   num_attention_heads: 12
-  num_hidden_layers: 12
+  num_hidden_layers: 6
   intermediate_size: 3072
   
   # Dropout rates
@@ -67,9 +67,9 @@ multitask:
   
   sarcasm_loss:
     type: "focal"  # Options: "binary_cross_entropy", "focal"
-    focal_alpha: 0.75  # Weight for positive class (sarcastic)
-    focal_gamma: 2.0
-    pos_weight: 2.0  # Weight for positive class to handle imbalance
+    focal_alpha: 0.85  # Raised from 0.75: upweights sarcastic class more aggressively
+    focal_gamma: 2.5   # Slightly higher gamma to focus on hard misclassified examples
+    pos_weight: 4.0   # Raised from 2.0: reflects ~67% non-sarcastic class ratio
 
 # Uncertainty Estimation
 uncertainty:

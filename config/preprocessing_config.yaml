@@ -75,7 +75,7 @@ preprocessing:
     
   # Tokenization
   tokenization:
-    tokenizer: "xlm-roberta-base"  # Must match model
+    tokenizer: "distilbert-base-multilingual-cased"  # Must match model
     max_length: 128
     truncation: true
     padding: "max_length"
